@@ -13,7 +13,7 @@ help: ## Outputs this help screen
 	@grep -E '(^[a-zA-Z0-9\./_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
 
 ## —— Project Management  —————————————————————————————————————————————————————————
-init: start init-sms init-oms init-cms ## Initialize all projects
+init: start init-sms init-oms init-cms init-cfs ## Initialize all projects
 
 ## —— 🐳 Docker 🐳 ————————————————————————————————————————————————————————————————
 build: ## Builds the Docker images
@@ -27,11 +27,14 @@ start: build up ## Build and start the containers
 down: ## Stop the docker hub
 	@$(DOCKER_COMP) down --remove-orphans
 
+logs: ## Show logs for all containers
+	@$(DOCKER_COMP) logs -f
+
 ## —— 📦 Vendor Commands 📦 ———————————————————————————————————————————————————————
-vendor: vendor-sms vendor-oms vendor-cms ## Install vendors for all projects
+vendor: vendor-sms vendor-oms vendor-cms vendor-cfs ## Install vendors for all projects
 
 ## —— 🎵 Symfony 🎵 ———————————————————————————————————————————————————————————————
-clear-cache: clear-cache-sms clear-cache-oms clear-cache-cms ## Clear the cache for all projects
+clear-cache: clear-cache-sms clear-cache-oms clear-cache-cms clear-cache-cfs ## Clear the cache for all projects
 
 ##
 ## ————————————————————————————————————————————————————————————————————————————————
@@ -146,3 +149,41 @@ symfony-cms: ## Run Symfony console command for CMS, usage: make symfony-cms c="
 clear-cache-cms: ## Clear the cache for CMS
 clear-cache-cms: c=cache:clear
 clear-cache-cms: symfony-cms
+
+##
+## ————————————————————————————————————————————————————————————————————————————————
+## Catalog Management System (OMS)
+## ————————————————————————————————————————————————————————————————————————————————
+##
+CFS_PHP_CONTAINER = $(DOCKER_COMP) exec cfs_php
+CFS_PHP = $(CFS_PHP_CONTAINER) php
+CFS_COMPOSER = $(CFS_PHP_CONTAINER) composer
+CFS_SYMFONY = $(CFS_PHP_CONTAINER) bin/console
+
+.PHONY: init-cfs shell-cfs composer-cfs vendor-cfs symfony-cfs clear-cache-cfs
+
+## —— Project Management  —————————————————————————————————————————————————————————
+init-cfs: vendor-cfs clear-cache-cfs ## Initialize the CFS project: Install dependencies and clear cache
+
+## —— 🐚 Docker Shell 🐚 ——————————————————————————————————————————————————————————
+shell-cfs: ## Connect to the CFS PHP FPM container
+	$(CFS_PHP_CONTAINER) sh
+
+## —— 🧙 Composer Commands 🧙 —————————————————————————————————————————————————————
+composer-cfs: ## Run composer command for CFS, usage: make composer-cfs c="update"
+	@$(eval c ?=)
+	$(CFS_COMPOSER) $(c)
+
+## —— 📦 Vendor Commands 📦 ———————————————————————————————————————————————————————
+vendor-cfs: ## Install vendors for CFS according to the current composer.lock file
+vendor-cfs: c=install --prefer-dist --no-dev --no-progress --no-scripts --no-interaction
+vendor-cfs:	composer-cfs
+
+## —— 🎵 Symfony 🎵 ———————————————————————————————————————————————————————————————
+symfony-cfs: ## Run Symfony console command for CFS, usage: make symfony-cfs c="about"
+	@$(eval c ?=)
+	@$(CFS_SYMFONY) $(c)
+
+clear-cache-cfs: ## Clear the cache for CFS
+clear-cache-cfs: c=cache:clear
+clear-cache-cfs: symfony-cfs

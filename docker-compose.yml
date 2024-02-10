@@ -64,6 +64,15 @@ services:
     volumes:
       - cms_data:/var/lib/postgresql/data
 
+  cfs_php:
+    container_name: cfs_php
+    build:
+      context: ./cli-front-system/
+      target: php
+    volumes:
+      - ./cli-front-system:/var/www/html
+      - ./docker/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
   rabbitmq:
     image: "rabbitmq:3-management"
     container_name: "rabbitmq"
