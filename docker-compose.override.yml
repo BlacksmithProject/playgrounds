@@ -9,6 +9,10 @@ services:
     ports:
       - "5433:5432"
 
+  cms_db:
+    ports:
+      - "5434:5432"
+
   rabbitmq:
     ports:
       - "5672:5672"

@@ -37,11 +37,32 @@ services:
     container_name: oms_postgres
     image: postgres:13
     environment:
-      - POSTGRES_DB=oms_app  # Assurez-vous que c'est correct et différent de sms_app
+      - POSTGRES_DB=oms_app
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
     volumes:
       - oms_data:/var/lib/postgresql/data
+
+  cms_php:
+    container_name: cms_php
+    build:
+      context: ./catalog-management-system/
+      target: php
+    volumes:
+      - ./catalog-management-system:/var/www/html
+      - ./docker/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    depends_on:
+      - cms_db
+
+  cms_db:
+    container_name: cms_postgres
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=cms_app
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - cms_data:/var/lib/postgresql/data
 
   rabbitmq:
     image: "rabbitmq:3-management"
@@ -72,3 +93,4 @@ volumes:
   rabbitmq_data:
   sms_data:
   oms_data:
+  cms_data:

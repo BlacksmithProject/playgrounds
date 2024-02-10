@@ -13,7 +13,7 @@ help: ## Outputs this help screen
 	@grep -E '(^[a-zA-Z0-9\./_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
 
 ## —— Project Management  —————————————————————————————————————————————————————————
-init: start init-sms init-oms ## Initialize both projects
+init: start init-sms init-oms init-cms ## Initialize all projects
 
 ## —— 🐳 Docker 🐳 ————————————————————————————————————————————————————————————————
 build: ## Builds the Docker images
@@ -28,10 +28,10 @@ down: ## Stop the docker hub
 	@$(DOCKER_COMP) down --remove-orphans
 
 ## —— 📦 Vendor Commands 📦 ———————————————————————————————————————————————————————
-vendor: vendor-sms vendor-oms ## Install vendors for both projects
+vendor: vendor-sms vendor-oms vendor-cms ## Install vendors for all projects
 
 ## —— 🎵 Symfony 🎵 ———————————————————————————————————————————————————————————————
-clear-cache: clear-cache-sms clear-cache-oms ## Clear the cache for both projects
+clear-cache: clear-cache-sms clear-cache-oms clear-cache-cms ## Clear the cache for all projects
 
 ##
 ## ————————————————————————————————————————————————————————————————————————————————
@@ -108,3 +108,41 @@ symfony-oms: ## Run Symfony console command for OMS, usage: make symfony-oms c="
 clear-cache-oms: ## Clear the cache for OMS
 clear-cache-oms: c=cache:clear
 clear-cache-oms: symfony-oms
+
+##
+## ————————————————————————————————————————————————————————————————————————————————
+## Catalog Management System (OMS)
+## ————————————————————————————————————————————————————————————————————————————————
+##
+CMS_PHP_CONTAINER = $(DOCKER_COMP) exec cms_php
+CMS_PHP = $(CMS_PHP_CONTAINER) php
+CMS_COMPOSER = $(CMS_PHP_CONTAINER) composer
+CMS_SYMFONY = $(CMS_PHP_CONTAINER) bin/console
+
+.PHONY: init-cms shell-cms composer-cms vendor-cms symfony-cms clear-cache-cms
+
+## —— Project Management  —————————————————————————————————————————————————————————
+init-cms: vendor-cms clear-cache-cms ## Initialize the CMS project: Install dependencies and clear cache
+
+## —— 🐚 Docker Shell 🐚 ——————————————————————————————————————————————————————————
+shell-cms: ## Connect to the CMS PHP FPM container
+	$(CMS_PHP_CONTAINER) sh
+
+## —— 🧙 Composer Commands 🧙 —————————————————————————————————————————————————————
+composer-cms: ## Run composer command for CMS, usage: make composer-cms c="update"
+	@$(eval c ?=)
+	$(CMS_COMPOSER) $(c)
+
+## —— 📦 Vendor Commands 📦 ———————————————————————————————————————————————————————
+vendor-cms: ## Install vendors for CMS according to the current composer.lock file
+vendor-cms: c=install --prefer-dist --no-dev --no-progress --no-scripts --no-interaction
+vendor-cms:	composer-cms
+
+## —— 🎵 Symfony 🎵 ———————————————————————————————————————————————————————————————
+symfony-cms: ## Run Symfony console command for CMS, usage: make symfony-cms c="about"
+	@$(eval c ?=)
+	@$(CMS_SYMFONY) $(c)
+
+clear-cache-cms: ## Clear the cache for CMS
+clear-cache-cms: c=cache:clear
+clear-cache-cms: symfony-cms
