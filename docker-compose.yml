@@ -1,0 +1,74 @@
+version: "3.9"
+
+services:
+  sms_php:
+    container_name: sms_php
+    build:
+      context: ./stock-management-system/
+      target: php
+    volumes:
+      - ./stock-management-system:/var/www/html
+      - ./docker/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    depends_on:
+      - sms_db
+
+  sms_db:
+    container_name: sms_postgres
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=sms_app
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - sms_data:/var/lib/postgresql/data
+
+  oms_php:
+    container_name: oms_php
+    build:
+      context: ./order-management-system/
+      target: php
+    volumes:
+      - ./order-management-system:/var/www/html
+      - ./docker/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    depends_on:
+      - oms_db
+
+  oms_db:
+    container_name: oms_postgres
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=oms_app  # Assurez-vous que c'est correct et différent de sms_app
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - oms_data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: "rabbitmq"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    volumes:
+      - "rabbitmq_data:/var/lib/rabbitmq"
+
+  nginx:
+    container_name: nginx
+    image: bitnami/nginx:1.19-debian-10
+    ports:
+      - "8092:8080"
+    volumes:
+      - ./docker/nginx.conf:/opt/bitnami/nginx/conf/nginx.conf
+      - ./stock-management-system:/var/www/html
+      - ./order-management-system:/var/www/html
+    depends_on:
+      - sms_php
+      - oms_php
+
+volumes:
+  rabbitmq_data:
+  sms_data:
+  oms_data:

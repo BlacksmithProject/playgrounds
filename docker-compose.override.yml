@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  sms_db:
+    ports:
+      - "5432:5432"
+
+  oms_db:
+    ports:
+      - "5433:5432"
+
+  rabbitmq:
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  nginx:
+    ports:
+      - "8092:8080"
