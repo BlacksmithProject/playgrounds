@@ -21,10 +21,11 @@ final readonly class DatabaseProductFetcher implements IFetchProducts
         return new ProductCollection(
             ...array_map(
                 fn (array $product) => new Product(
+                    $product['id'],
                     $product['name'],
                     $product['description'],
                     (float) $product['price'],
-                    (int) $product['category_id']
+                    $product['category_id']
                 ),
                 $products
             )

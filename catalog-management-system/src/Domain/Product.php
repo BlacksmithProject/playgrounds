@@ -6,16 +6,18 @@ namespace App\Domain;
 final class Product implements \JsonSerializable
 {
     public function __construct(
+        public string $id,
         public string $name,
         public string $description,
         public float $price,
-        public int $categoryId
+        public string $categoryId
     ) {
     }
 
     public function jsonSerialize(): array
     {
         return [
+            'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
