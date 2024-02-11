@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Commands;
 
 use App\Domain\DrivenPort\IFetchCatalog;
+use App\Domain\DrivenPort\IPlaceOrders;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,7 +14,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 final class InteractiveFront extends Command
 {
     public function __construct(
-        private readonly IFetchCatalog $fetchCatalog
+        private readonly IFetchCatalog $fetchCatalog,
+        private readonly IPlaceOrders $orderPlacer
     ) {
         parent::__construct('front');
     }
@@ -32,7 +34,6 @@ final class InteractiveFront extends Command
         $io->section('List of products');
 
         $catalog = $this->fetchCatalog->fetchCatalog();
-
 
         $io->table(
             ['Name', 'Description', 'Price'],
@@ -56,6 +57,12 @@ final class InteractiveFront extends Command
         $selectedProduct = $io->askQuestion($question);
 
         $quantity = $io->ask(sprintf('You have selected: %s. How many do you want to buy ?', $selectedProduct));
+
+        $this->orderPlacer->placeOrder([
+            'productId' => $catalog[array_search($selectedProduct, array_column($catalog, 'name'))]['id'],
+            'quantity' => (int) $quantity,
+            'unitPrice' => $catalog[array_search($selectedProduct, array_column($catalog, 'name'))]['price']
+        ]);
 
         $io->success(sprintf('You have placed an order to buy %s %s', $quantity, $selectedProduct));
 

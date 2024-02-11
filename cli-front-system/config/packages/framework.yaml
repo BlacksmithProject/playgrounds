@@ -14,6 +14,10 @@ framework:
                 base_uri: '%env(CMS_API_URL)%'
                 headers:
                     Host: '%env(CMS_API_HOST)%'
+            oms_api.client:
+                base_uri: '%env(OMS_API_URL)%'
+                headers:
+                    Host: '%env(OMS_API_HOST)%'
 
 when@test:
     framework:
