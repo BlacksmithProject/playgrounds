@@ -36,7 +36,7 @@ vendor: vendor-sms vendor-oms vendor-cms vendor-cfs ## Install vendors for all p
 ## —— 🎵 Symfony 🎵 ———————————————————————————————————————————————————————————————
 clear-cache: clear-cache-sms clear-cache-oms clear-cache-cms clear-cache-cfs ## Clear the cache for all projects
 
-migrations: migration-cms migration-sms ## Run migrations for all projects
+migrations: migration-cms migration-sms migration-oms ## Run migrations for all projects
 
 ##
 ## ————————————————————————————————————————————————————————————————————————————————
@@ -119,6 +119,12 @@ symfony-oms: ## Run Symfony console command for OMS, usage: make symfony-oms c="
 clear-cache-oms: ## Clear the cache for OMS
 clear-cache-oms: c=cache:clear
 clear-cache-oms: symfony-oms
+
+## ——— Migration Commands —————————————————————————————————————————————————————————
+MIGRATION_COMMAND := doctrine:migrations:migrate --no-interaction
+migration-oms: ## Run migration command for OMS
+migration-oms: c=$(MIGRATION_COMMAND)
+migration-oms: symfony-oms
 
 ##
 ## ————————————————————————————————————————————————————————————————————————————————
