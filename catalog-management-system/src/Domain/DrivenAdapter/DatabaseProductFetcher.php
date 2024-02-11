@@ -31,4 +31,17 @@ final readonly class DatabaseProductFetcher implements IFetchProducts
             )
         );
     }
+
+    public function fetchById(string $id): Product
+    {
+        $product = $this->connection->fetchAssociative('SELECT * FROM products WHERE id = :id', ['id' => $id]);
+
+        return new Product(
+            $product['id'],
+            $product['name'],
+            $product['description'],
+            (float) $product['price'],
+            $product['category_id']
+        );
+    }
 }
