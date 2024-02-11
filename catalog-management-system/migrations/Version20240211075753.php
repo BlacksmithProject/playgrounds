@@ -16,6 +16,9 @@ final class Version20240211075753 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
+        if ('prod' === $_ENV['APP_ENV']) {
+            return;
+        }
         $this->addSql(<<<SQL
             INSERT INTO categories (name, description) VALUES
             ('Fruits et Légumes', 'Frais du jour'),
