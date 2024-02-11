@@ -13,7 +13,7 @@ help: ## Outputs this help screen
 	@grep -E '(^[a-zA-Z0-9\./_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
 
 ## —— Project Management  —————————————————————————————————————————————————————————
-init: start init-sms init-oms init-cms init-cfs ## Initialize all projects
+init: start init-sms init-oms init-cms init-cfs migrations clear-cache ## Initialize all projects
 
 ## —— 🐳 Docker 🐳 ————————————————————————————————————————————————————————————————
 build: ## Builds the Docker images
@@ -35,6 +35,8 @@ vendor: vendor-sms vendor-oms vendor-cms vendor-cfs ## Install vendors for all p
 
 ## —— 🎵 Symfony 🎵 ———————————————————————————————————————————————————————————————
 clear-cache: clear-cache-sms clear-cache-oms clear-cache-cms clear-cache-cfs ## Clear the cache for all projects
+
+migrations: migration-cms ## Run migrations for all projects
 
 ##
 ## ————————————————————————————————————————————————————————————————————————————————
@@ -149,6 +151,12 @@ symfony-cms: ## Run Symfony console command for CMS, usage: make symfony-cms c="
 clear-cache-cms: ## Clear the cache for CMS
 clear-cache-cms: c=cache:clear
 clear-cache-cms: symfony-cms
+
+## ——— Migration Commands —————————————————————————————————————————————————————————
+MIGRATION_COMMAND := doctrine:migrations:migrate --no-interaction
+migration-cms: ## Run migration command for CMS
+migration-cms: c=$(MIGRATION_COMMAND)
+migration-cms: symfony-cms
 
 ##
 ## ————————————————————————————————————————————————————————————————————————————————
