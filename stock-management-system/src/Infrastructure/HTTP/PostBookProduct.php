@@ -6,6 +6,7 @@ namespace App\Infrastructure\HTTP;
 use App\Domain\DriverPort\IBookProducts;
 use App\Domain\Exception\InsufficientStock;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -14,8 +15,10 @@ final readonly class PostBookProduct
     public function __construct(private IBookProducts $productsBooker) {}
 
     #[Route('/products/{productId}/book', methods: ['POST'])]
-    public function __invoke(string $productId, int $quantity): JsonResponse
+    public function __invoke(string $productId, Request $request): JsonResponse
     {
+        $quantity = (int) $request->request->get('quantity');
+
         try {
             $this->productsBooker->bookProduct($productId, $quantity);
 
