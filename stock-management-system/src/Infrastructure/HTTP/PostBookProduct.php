@@ -17,7 +17,11 @@ final readonly class PostBookProduct
     #[Route('/products/{productId}/book', methods: ['POST'])]
     public function __invoke(string $productId, Request $request): JsonResponse
     {
-        $quantity = (int) $request->request->get('quantity');
+        $quantity = $request->toArray()['quantity'];
+
+        if ($quantity <= 0) {
+            return new JsonResponse(null, Response::HTTP_BAD_REQUEST);
+        }
 
         try {
             $this->productsBooker->bookProduct($productId, $quantity);

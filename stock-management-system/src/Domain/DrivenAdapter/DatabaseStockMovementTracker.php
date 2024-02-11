@@ -16,19 +16,26 @@ final class DatabaseStockMovementTracker implements ITrackStockMovements
     {
         try {
             $this->connection->beginTransaction();
+            $stockItem = $this->connection->createQueryBuilder()
+                ->select('*')
+                ->from('stock_items')
+                ->where('product_id = :product_id')
+                ->setParameter('product_id', $productId)
+                ->executeQuery()
+                ->fetchAssociative();
             $this->connection->update('stock_items', [
-                'quantity' => 'quantity - :quantity',
+                'quantity' => $stockItem['quantity'] - $quantity,
                 ], [
                     'product_id' => $productId,
-                    'quantity' => $quantity,
                 ],
             );
+
             $this->connection->insert('stock_movements', [
-                'stock_item_id' => $productId,
-                'type' => StockMovement::SET_ASIDE,
+                'stock_item_id' => $stockItem['id'],
+                'type' => StockMovement::SET_ASIDE->value,
                 'quantity' => $quantity,
                 'reason' => 'RAS',
-                'created_at' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
+                'movement_date' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
             ]);
             $this->connection->commit();
         } catch (Exception $e) {
