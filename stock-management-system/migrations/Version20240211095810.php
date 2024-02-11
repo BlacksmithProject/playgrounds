@@ -20,8 +20,13 @@ final class Version20240211095810 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql(<<<SQL
+            -- Assurez-vous que l'extension pgcrypto est disponible
+            CREATE EXTENSION IF NOT EXISTS pgcrypto;    
+        SQL);
+
+        $this->addSql(<<<SQL
             CREATE TABLE IF NOT EXISTS products (
-                id SERIAL PRIMARY KEY,
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 name VARCHAR(255) NOT NULL,
                 description TEXT,
                 -- Assurez-vous que ces champs correspondent à ceux de votre CMS si déjà existants
@@ -31,8 +36,8 @@ final class Version20240211095810 extends AbstractMigration
         SQL);
         $this->addSql(<<<SQL
             CREATE TABLE IF NOT EXISTS stock_items (
-                id SERIAL PRIMARY KEY,
-                product_id INT NOT NULL,
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                product_id UUID NOT NULL,
                 quantity INT NOT NULL CHECK (quantity >= 0), -- Empêche les quantités négatives
                 location VARCHAR(255), -- Optionnel, si vous suivez les emplacements de stock
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -42,8 +47,8 @@ final class Version20240211095810 extends AbstractMigration
         SQL);
         $this->addSql(<<<SQL
             CREATE TABLE IF NOT EXISTS stock_movements (
-                id SERIAL PRIMARY KEY,
-                stock_item_id INT NOT NULL,
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                stock_item_id UUID NOT NULL,
                 type VARCHAR(50), -- Par exemple, "IN" pour entrée, "OUT" pour sortie
                 quantity INT NOT NULL,
                 reason TEXT, -- Optionnel, par exemple "commande", "retour", "réapprovisionnement"
