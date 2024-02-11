@@ -7,9 +7,6 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-/**
- * Auto-generated Migration: Please modify to your needs!
- */
 final class Version20240211123839 extends AbstractMigration
 {
     public function getDescription(): string
@@ -20,14 +17,12 @@ final class Version20240211123839 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql(<<<SQL
-            -- Assurez-vous que l'extension pgcrypto est disponible
             CREATE EXTENSION IF NOT EXISTS pgcrypto;    
         SQL);
 
         $this->addSql(<<<SQL
             CREATE TABLE IF NOT EXISTS orders (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                customer_id UUID NOT NULL,
                 status VARCHAR(255) NOT NULL,
                 total DECIMAL(10, 2) NOT NULL,
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
