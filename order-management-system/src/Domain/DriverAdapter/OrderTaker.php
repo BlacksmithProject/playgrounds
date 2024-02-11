@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace App\Domain\DriverAdapter;
 
+use App\Domain\DrivenPort\IBookProduct;
 use App\Domain\DrivenPort\IFetchProductDetails;
 use App\Domain\DrivenPort\IProvideIdentifiers;
 use App\Domain\DrivenPort\IStoreOrders;
-use App\Domain\DriverPort\IBookProducts;
 use App\Domain\DriverPort\ITakeOrders;
 use App\Domain\Exception\InsufficientStock;
 use App\Domain\Exception\OrderFailed;
@@ -18,8 +18,8 @@ final readonly class OrderTaker implements ITakeOrders
 {
     public function __construct(
         private IFetchProductDetails $productDetailsFetcher,
-        private IBookProducts $productBooker,
-        private IStoreOrders $orderStorer,
+        private IBookProduct $productBooker,
+        private IStoreOrders $orderStorage,
         private IProvideIdentifiers $idProvider
     ) {}
 
@@ -46,8 +46,8 @@ final readonly class OrderTaker implements ITakeOrders
                     $productPrice
                 )
             );
-            $this->productBooker->bookProduct($productId, $quantity);
-            $this->orderStorer->store($order);
+            $this->productBooker->book($productId, $quantity);
+            $this->orderStorage->store($order);
         } catch (InsufficientStock|ProductNotFound $e) {
             throw new OrderFailed();
         }

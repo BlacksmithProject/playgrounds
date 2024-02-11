@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final readonly class PostTakeOrder
 {
-    public function __construct(private readonly ITakeOrders $ordersTaker) {}
+    public function __construct(private ITakeOrders $ordersTaker) {}
 
     #[Route(path: '/orders', name: 'take_orders', methods: ['POST'])]
     public function __invoke(Request $request): JsonResponse
