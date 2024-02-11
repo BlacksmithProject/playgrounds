@@ -8,6 +8,16 @@ framework:
 
     #esi: true
     #fragments: true
+    http_client:
+        scoped_clients:
+            cms_api.client:
+                base_uri: '%env(CMS_API_URL)%'
+                headers:
+                    Host: '%env(CMS_API_HOST)%'
+            sms_api.client:
+                base_uri: '%env(SMS_API_URL)%'
+                headers:
+                    Host: '%env(SMS_API_HOST)%'
 
 when@test:
     framework:
