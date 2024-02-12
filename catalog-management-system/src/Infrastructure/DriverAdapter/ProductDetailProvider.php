@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Domain\DriverAdapter;
+namespace App\Infrastructure\DriverAdapter;
 
 use App\Domain\DrivenPort\IFetchProducts;
 use App\Domain\DriverPort\IProvideProductDetail;

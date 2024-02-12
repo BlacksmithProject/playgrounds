@@ -1,11 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Domain\DrivenAdapter;
+namespace App\Infrastructure\DrivenAdapter;
 
 use App\Domain\DrivenPort\IBookProduct;
 use App\Domain\Exception\InsufficientStock;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class HttpProductBooker implements IBookProduct

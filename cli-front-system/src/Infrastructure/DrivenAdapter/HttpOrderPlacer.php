@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Domain\DrivenAdapter;
+namespace App\Infrastructure\DrivenAdapter;
 
 use App\Domain\DrivenPort\IPlaceOrders;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
