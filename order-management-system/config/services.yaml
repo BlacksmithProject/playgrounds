@@ -21,3 +21,5 @@ services:
     App\Infrastructure\HTTP\:
         resource: '../src/Infrastructure/HTTP/'
         tags: ['controller.service_arguments']
+
+    Swarrot\SwarrotBundle\Broker\Publisher: '@swarrot.publisher'

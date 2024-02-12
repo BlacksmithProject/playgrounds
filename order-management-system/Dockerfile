@@ -25,10 +25,14 @@ RUN apt-get update \
     # PostgresSQL
     && apt-get install -y libpq-dev \
     # Git
-    && apt-get -y install git
+    && apt-get -y install git \
+    # AMQP
+    && apt-get -y install librabbitmq-dev \
+    && pecl install amqp
 
 # Ajout PostgresSQL
 RUN docker-php-source extract \
+    && docker-php-ext-enable amqp \
 	&& docker-php-ext-install pdo_pgsql \
 	&& docker-php-source delete
 

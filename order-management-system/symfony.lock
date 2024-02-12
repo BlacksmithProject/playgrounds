@@ -26,6 +26,18 @@
             "migrations/.gitignore"
         ]
     },
+    "swarrot/swarrot-bundle": {
+        "version": "2.5",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.6",
+            "ref": "1c77a3e26d17c85c335d5c255d736da8848069fd"
+        },
+        "files": [
+            "config/packages/swarrot.yaml"
+        ]
+    },
     "symfony/console": {
         "version": "7.0",
         "recipe": {

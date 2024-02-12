@@ -1,0 +1,6 @@
+{
+  "name": "orders_queue",
+  "durable": true,
+  "auto_delete": false,
+  "arguments": {}
+}

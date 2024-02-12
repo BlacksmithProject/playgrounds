@@ -6,6 +6,7 @@ namespace App\Infrastructure\DriverAdapter;
 use App\Domain\DrivenPort\IBookProduct;
 use App\Domain\DrivenPort\IFetchProductDetails;
 use App\Domain\DrivenPort\IProvideIdentifiers;
+use App\Domain\DrivenPort\IPublishMessages;
 use App\Domain\DrivenPort\IStoreOrders;
 use App\Domain\DriverPort\ITakeOrders;
 use App\Domain\Exception\InsufficientStock;
@@ -20,7 +21,8 @@ final readonly class OrderTaker implements ITakeOrders
         private IFetchProductDetails $productDetailsFetcher,
         private IBookProduct $productBooker,
         private IStoreOrders $orderStorage,
-        private IProvideIdentifiers $idProvider
+        private IProvideIdentifiers $idProvider,
+        private IPublishMessages $messagePublisher
     ) {}
 
     /** @throws OrderFailed */
@@ -48,6 +50,7 @@ final readonly class OrderTaker implements ITakeOrders
             );
             $this->productBooker->book($productId, $quantity);
             $this->orderStorage->store($order);
+            $this->messagePublisher->publish(['order_id' => $order->id], 'order_created');
         } catch (InsufficientStock|ProductNotFound $e) {
             throw new OrderFailed();
         }

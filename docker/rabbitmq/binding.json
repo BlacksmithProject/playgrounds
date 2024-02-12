@@ -1,0 +1,7 @@
+{
+  "source": "orders",
+  "destination": "orders_queue",
+  "destination_type": "queue",
+  "routing_key": "orders.order_created",
+  "arguments": {}
+}

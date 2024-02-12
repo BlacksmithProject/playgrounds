@@ -73,9 +73,9 @@ services:
       - ./cli-front-system:/var/www/html
       - ./docker/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
-  rabbitmq:
+  rabbit_playgrounds:
     image: "rabbitmq:3-management"
-    container_name: "rabbitmq"
+    container_name: "rabbit_playgrounds"
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -84,6 +84,15 @@ services:
       - RABBITMQ_DEFAULT_PASS=password
     volumes:
       - "rabbitmq_data:/var/lib/rabbitmq"
+
+  rabbitmq-init:
+    build: ./docker/rabbitmq
+    container_name: "rabbitmq-init"
+    depends_on:
+      - rabbit_playgrounds
+    command: sh /scripts/init-rabbitmq.sh
+    environment:
+      - RABBITMQ_HOST=rabbit_playgrounds
 
   nginx:
     container_name: nginx

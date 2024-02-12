@@ -13,7 +13,7 @@ help: ## Outputs this help screen
 	@grep -E '(^[a-zA-Z0-9\./_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
 
 ## —— Project Management  —————————————————————————————————————————————————————————
-init: start init-sms init-oms init-cms init-cfs migrations clear-cache ## Initialize all projects
+init: start init-sms init-oms init-cms init-cfs ## Initialize all projects
 
 ## —— 🐳 Docker 🐳 ————————————————————————————————————————————————————————————————
 build: ## Builds the Docker images
@@ -51,7 +51,7 @@ SMS_SYMFONY = $(SMS_PHP_CONTAINER) bin/console
 .PHONY: init-sms shell-sms composer-sms vendor-sms symfony-sms clear-cache-sms
 
 ## —— Project Management  —————————————————————————————————————————————————————————
-init-sms: vendor-sms clear-cache-sms ## Initialize the SMS project: Install dependencies and clear cache
+init-sms: vendor-sms migration-sms clear-cache-sms ## Initialize the SMS project: Install dependencies and clear cache
 
 ## —— 🐚 Docker Shell 🐚 ——————————————————————————————————————————————————————————
 shell-sms: ## Connect to the SMS PHP FPM container
@@ -95,7 +95,7 @@ OMS_SYMFONY = $(OMS_PHP_CONTAINER) bin/console
 .PHONY: init-oms shell-oms composer-oms vendor-oms symfony-oms clear-cache-oms
 
 ## —— Project Management  —————————————————————————————————————————————————————————
-init-oms: vendor-oms clear-cache-oms ## Initialize the OMS project: Install dependencies and clear cache
+init-oms: vendor-oms migration-oms clear-cache-oms ## Initialize the OMS project: Install dependencies and clear cache
 
 ## —— 🐚 Docker Shell 🐚 ——————————————————————————————————————————————————————————
 shell-oms: ## Connect to the OMS PHP FPM container
@@ -139,7 +139,7 @@ CMS_SYMFONY = $(CMS_PHP_CONTAINER) bin/console
 .PHONY: init-cms shell-cms composer-cms vendor-cms symfony-cms clear-cache-cms
 
 ## —— Project Management  —————————————————————————————————————————————————————————
-init-cms: vendor-cms clear-cache-cms ## Initialize the CMS project: Install dependencies and clear cache
+init-cms: vendor-cms migration-cms clear-cache-cms ## Initialize the CMS project: Install dependencies and clear cache
 
 ## —— 🐚 Docker Shell 🐚 ——————————————————————————————————————————————————————————
 shell-cms: ## Connect to the CMS PHP FPM container
